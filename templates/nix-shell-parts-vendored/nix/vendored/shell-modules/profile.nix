@@ -25,6 +25,7 @@ in {
     enable = lib.mkEnableOption "bin profile directory";
     destination = lib.mkOption {
       type = types.str;
+      description = "The destination directory in which to create the profile";
       default =
         if config.git.root.enable
         then "${config.git.root.shellVariable}/bin"

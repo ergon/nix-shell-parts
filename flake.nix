@@ -17,7 +17,17 @@
       flake.flakeModules.default = ./modules;
 
       perSystem = {
+        config,
+        pkgs,
+        lib,
+        ...
+      }: {
+        packages.docs = pkgs.callPackage ./docs {
+          inherit pkgs lib inputs;
+        };
         shells.default = {
+          inputsFrom = [config.packages.docs];
+
           treefmt = {
             enable = true;
             pre-commit-hook = true;

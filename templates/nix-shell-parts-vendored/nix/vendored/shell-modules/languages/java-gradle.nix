@@ -10,10 +10,12 @@ in {
     gradle = {
       version = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
+        description = "The gradle version to use";
         default = null;
       };
       hash = lib.mkOption {
         type = lib.types.str;
+        description = "The SRI hash of the gradle distribution";
         default = "";
       };
     };

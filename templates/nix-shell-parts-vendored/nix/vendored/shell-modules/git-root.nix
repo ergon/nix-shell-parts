@@ -10,6 +10,16 @@ in {
       enable = lib.mkEnableOption "git root directory shell integration";
       shellVariable = lib.mkOption {
         type = lib.types.str;
+        description = ''
+          The value of the git repository root directory to be used in shell scripts.
+
+          When this module is enabled, the shell hook sets the environment variable
+          named by `git.root.shellVariableName` to the output of:
+
+            git rev-parse --show-toplevel
+
+          This option exposes a safe, typed way to reference that variable in other Nix configuration (for example additional shellHook fragments).
+        '';
         default = ''''${${cfg.root.shellVariableName}?${cfg.root.shellVariableName} is not set}'';
         apply = value:
           if cfg.root.enable
@@ -22,6 +32,11 @@ in {
       };
       shellVariableName = lib.mkOption {
         type = lib.types.str;
+        description = ''
+          Name of the environment variable that will hold the git repository root inside the dev shell.
+
+          You can override the name if you need to avoid clashes with other tooling.
+        '';
         default = "_GIT_ROOT";
         apply = value:
           if cfg.root.enable

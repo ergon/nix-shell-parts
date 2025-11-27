@@ -9,19 +9,21 @@
   cfg = config.treefmt;
 in {
   options.treefmt = lib.mkOption {
+    description = "treefmt config";
     type = treefmt-nix.lib.submoduleWith lib {
+      specialArgs = {inherit pkgs;};
       modules = [
         {
           options = {
             enable = lib.mkEnableOption "treefmt formatting";
             pre-commit-hook = lib.mkEnableOption "Setup pre commit hook for treefmt";
+            pkgs = lib.mkOption {internal = true;};
           };
         }
       ];
     };
   };
   config = {
-    treefmt.pkgs = pkgs;
     packages = lib.mkIf cfg.enable [
       config.treefmt.build.wrapper
     ];

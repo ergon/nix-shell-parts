@@ -17,14 +17,21 @@
     options = {
       text = lib.mkOption {
         type = types.str;
+        description = ''
+          The script body to expose as an executable command named after the attribute key.
+          If the text starts with a shebang (e.g. "#!/usr/bin/env python"), it is written verbatim and executed with that interpreter.
+          Otherwise the text is treated as a shell script (bash).
+        '';
       };
       path = lib.mkOption {
         type = types.str;
+        description = ''Absolute path to the generated executable for this script.'';
         readOnly = true;
       };
       strict = lib.mkOption {
         type = types.bool;
-        default = false;
+        description = ''When the script is treated as bash (no shebang), enable strict mode and lint it with shellcheck.'';
+        default = true;
       };
       finalPackage = lib.mkOption {
         type = types.package;

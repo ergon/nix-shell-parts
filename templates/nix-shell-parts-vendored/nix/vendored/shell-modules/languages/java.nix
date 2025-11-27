@@ -10,13 +10,17 @@ in {
     enable = lib.mkEnableOption "jdk";
     jdk.package = lib.mkOption {
       type = lib.types.package;
+      description = "The JDK package to use";
+      defaultText = lib.literalExpression "pkgs.jdk";
       default = pkgs.jdk;
     };
     gradle = {
       enable = lib.mkEnableOption "gradle";
       package = lib.mkOption {
         type = lib.types.package;
+        description = "Gradle package to use";
         default = pkgs.gradle;
+        defaultText = lib.literalExpression "pkgs.gradle";
       };
     };
   };
