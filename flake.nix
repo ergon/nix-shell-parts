@@ -4,6 +4,9 @@
 
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
+
+    treefmt-nix.url = "github:numtide/treefmt-nix";
+    treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs:
@@ -14,7 +17,13 @@
       flake.flakeModules.default = ./modules;
 
       perSystem = {
-        shells.default = {};
+        shells.default = {
+          treefmt = {
+            enable = true;
+            pre-commit-hook = true;
+            programs.alejandra.enable = true;
+          };
+        };
       };
     };
 }

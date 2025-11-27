@@ -10,5 +10,6 @@
     ./shell-modules/git-root.nix
     ./shell-modules/profile.nix
     ./shell-modules/scripts.nix
+    ./shell-modules/treefmt.nix
   ];
 }
