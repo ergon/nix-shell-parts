@@ -12,5 +12,9 @@
         ./modules
       ];
       flake.flakeModules.default = ./modules;
+
+      perSystem = {
+        shells.default = {};
+      };
     };
 }
