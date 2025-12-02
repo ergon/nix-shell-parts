@@ -20,13 +20,13 @@ You have all options available but nothing is enabled until you turn it on, with
 Standard template (uses this repo as an input):
 
 ```bash
-nix flake init -t github:ergon/nix-shell-parts
+nix flake init -t github:ergon/nix-shell-parts?ref=v1
 ````
 
 Vendored template (copies all modules into your repo):
 
 ```bash
-nix flake init -t github:ergon/nix-shell-parts#vendored
+nix flake init -t github:ergon/nix-shell-parts?ref=v1#vendored
 ```
 
 **When to use which?**
