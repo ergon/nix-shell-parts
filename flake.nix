@@ -14,7 +14,19 @@
       flakeModules.default = flake-parts-lib.importApply ./modules {inherit inputs;};
     in {
       imports = [flakeModules.default];
-      flake = {inherit flakeModules;};
+      flake = {
+        inherit flakeModules;
+        templates = {
+          default = {
+            description = "Standard template for nix-shell-parts: normal flake dependency, easy upgrades by updating your flake input.";
+            path = ./templates/nix-shell-parts;
+          };
+          vendored = {
+            description = "Vendored template for nix-shell-parts: everything lives in your repo, but you must manually pull updates later.";
+            path = ./templates/nix-shell-parts-vendored;
+          };
+        };
+      };
 
       perSystem = {
         config,
