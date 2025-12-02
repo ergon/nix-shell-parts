@@ -42,17 +42,29 @@
       else option';
   };
 
+  githubBaseUrl = "https://github.com/ergon/nix-shell-parts/blob/v1/";
   rootPrefix = toString ../.;
+  declarationToLink = storePathPrefix: baseUrl: decl: let
+    subpath = lib.removePrefix "/" (lib.removePrefix storePathPrefix (toString decl));
+  in rec {
+    url = "${baseUrl}${subpath}";
+    name =
+      if lib.hasPrefix githubBaseUrl url
+      then subpath
+      else url;
+  };
   mapDeclarations = option:
     option
     // {
       declarations =
-        map (decl: let
-          subpath = lib.removePrefix "/" (lib.removePrefix rootPrefix (toString decl));
-        in {
-          url = "https://github.com/ergon/nix-shell-parts/blob/v1/${subpath}";
-          name = subpath;
-        })
+        map (
+          decl:
+            if lib.hasPrefix rootPrefix (toString decl)
+            then declarationToLink rootPrefix githubBaseUrl decl
+            else if lib.hasPrefix (toString inputs.treefmt-nix) (toString decl)
+            then declarationToLink (toString inputs.treefmt-nix) "https://github.com/numtide/treefmt-nix/blob/${inputs.treefmt-nix.rev}/" decl
+            else throw "Cannot map declaration of ${decl}"
+        )
         option.declarations;
     };
 
