@@ -56,20 +56,23 @@
         option.declarations;
     };
 
-  allShellOptions = lib.evalModules {
-    modules =
-      [
-        {git.root.enable = true;}
-        ../templates/nix-shell-parts-vendored/nix/vendored/shell-modules/default.nix
-      ]
-      ++ (
-        import ../templates/nix-shell-parts-vendored/nix/vendored
-      ).perSystem.shellModules;
-    specialArgs = {
-      name = "<name>";
-      inherit pkgs inputs;
+  allShellOptions = let
+    nix-flake-parts = {inherit inputs;};
+  in
+    lib.evalModules {
+      modules =
+        [
+          {git.root.enable = true;}
+          ../templates/nix-shell-parts-vendored/nix/vendored/shell-modules/default.nix
+        ]
+        ++ (
+          (import ../templates/nix-shell-parts-vendored/nix/vendored nix-flake-parts)
+        ).perSystem.shellModules;
+      specialArgs = {
+        name = "<name>";
+        inherit pkgs inputs nix-flake-parts;
+      };
     };
-  };
 
   hasDeclaringFile = option: declaringFile:
     lib.any (declaration: declaration == declaringFile) option.declarations;

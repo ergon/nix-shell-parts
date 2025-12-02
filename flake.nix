@@ -10,11 +10,11 @@
   };
 
   outputs = inputs:
-    inputs.flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = [
-        ./modules
-      ];
-      flake.flakeModules.default = ./modules;
+    inputs.flake-parts.lib.mkFlake {inherit inputs;} ({flake-parts-lib, ...}: let
+      flakeModules.default = flake-parts-lib.importApply ./modules {inherit inputs;};
+    in {
+      imports = [flakeModules.default];
+      flake = {inherit flakeModules;};
 
       perSystem = {
         config,
@@ -35,5 +35,5 @@
           };
         };
       };
-    };
+    });
 }

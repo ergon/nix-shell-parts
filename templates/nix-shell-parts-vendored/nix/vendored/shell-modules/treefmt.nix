@@ -1,11 +1,11 @@
 {
-  inputs,
+  nix-flake-parts,
   lib,
   config,
   pkgs,
   ...
 }: let
-  inherit (inputs) treefmt-nix;
+  inherit (nix-flake-parts.inputs) treefmt-nix;
   cfg = config.treefmt;
 in {
   options.treefmt = lib.mkOption {
@@ -22,11 +22,12 @@ in {
         }
       ];
     };
+    default = {};
   };
   config = {
     packages = lib.mkIf cfg.enable [
-      config.treefmt.build.wrapper
+      cfg.build.wrapper
     ];
-    git.hooks.pre-commit-command = lib.mkIf cfg.pre-commit-hook "${lib.getExe config.treefmt.build.wrapper} --fail-on-change $FILES";
+    git.hooks.pre-commit-command = lib.mkIf cfg.pre-commit-hook "${lib.getExe cfg.build.wrapper} --fail-on-change $FILES";
   };
 }

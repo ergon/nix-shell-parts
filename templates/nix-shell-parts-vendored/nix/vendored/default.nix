@@ -1,4 +1,5 @@
-{
+nix-flake-parts: {
+  _module.args = {inherit nix-flake-parts;};
   imports = [
     ./systems.nix
     ./shell-modules.nix

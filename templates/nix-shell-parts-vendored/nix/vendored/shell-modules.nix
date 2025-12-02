@@ -1,6 +1,7 @@
 {
   inputs,
   flake-parts-lib,
+  nix-flake-parts,
   ...
 }: {
   options = {
@@ -28,7 +29,7 @@
               [
                 {
                   _module.args = {
-                    inherit pkgs inputs;
+                    inherit pkgs inputs nix-flake-parts;
                   };
                 }
                 ./shell-modules
