@@ -76,11 +76,30 @@
 
   hasDeclaringFile = option: declaringFile:
     lib.any (declaration: declaration == declaringFile) option.declarations;
+
+  hasNamePrefix = prefixes: option:
+    lib.any (p: lib.strings.hasPrefix p option.name) prefixes;
+
+  # For a given docs page, decide if an option should be visible there
+  optionVisibleFor = declaringFile: option: let
+    # normal rule: must be declared in the file
+    declaredHere = hasDeclaringFile option declaringFile;
+
+    # extra rule for treefmt module:
+    # include any option whose name starts with "treefmt"
+    extraForTreefmt =
+      lib.strings.hasPrefix rootPrefix declaringFile
+      && builtins.baseNameOf declaringFile == "treefmt.nix"
+      && hasNamePrefix ["treefmt"]
+      option;
+  in
+    declaredHere || extraForTreefmt;
+
   optionsDocFor = declaringFile:
     pkgs.nixosOptionsDoc {
       inherit (allShellOptions) options;
       transformOptions = option:
-        if (option.name == "_module.args" || !(hasDeclaringFile option declaringFile))
+        if option.name == "_module.args" || !(optionVisibleFor declaringFile option)
         then option // {visible = false;}
         else mapDeclarations option;
     };
