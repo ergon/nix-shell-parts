@@ -32,7 +32,12 @@ in {
       name = "install-symlinks";
       runtimeInputs = [pkgs.coreutils];
       text = ''
-        cd "$(git rev-parse --show-toplevel)"
+        if ! _git_root=$(git rev-parse --show-toplevel 2>/dev/null); then
+          echo 'Error: Cannot install files when not inside a git repository. Did you forget to run git init?' >&2
+          exit 1
+        fi
+
+        cd "$_git_root"
         ${lib.concatStringsSep "\n" (lib.mapAttrsToList install-symlink config.files)}
       '';
     };
