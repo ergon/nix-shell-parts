@@ -17,22 +17,23 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-nix-flake-parts: {
-  _module.args = {inherit nix-flake-parts;};
-  imports = [
-    ./systems.nix
-    ./shell-modules.nix
-  ];
-  perSystem.shellModules = [
-    ./shell-modules/devenv-compatibility.nix
-    ./shell-modules/files.nix
-    ./shell-modules/git-hooks.nix
-    ./shell-modules/git-lfs.nix
-    ./shell-modules/git-root.nix
-    ./shell-modules/languages/java-gradle.nix
-    ./shell-modules/languages/java.nix
-    ./shell-modules/profile.nix
-    ./shell-modules/scripts.nix
-    ./shell-modules/treefmt.nix
-  ];
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}: let
+  cfg = config.git;
+in {
+  options.git = {
+    lfs = {
+      enable = lib.mkEnableOption "Git LFS (Large File Storage)";
+      package = lib.mkPackageOption pkgs "git-lfs" {};
+    };
+  };
+  config =
+    lib.mkIf cfg.lfs.enable
+    {
+      packages = [cfg.lfs.package];
+    };
 }
