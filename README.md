@@ -1,6 +1,6 @@
 # nix-shell-parts
 
-> [!IMPORTANT]
+> ⚠️
 > This repository is in its early stages and not yet stable.
 
 `nix-shell-parts` is a lightweight kickstarter for adding Nix development and deployment shells to a project without needing to know much about Nix, flakes and how to structure a project upfront.
@@ -21,7 +21,7 @@ Standard template (uses this repo as an input):
 
 ```bash
 nix flake init -t github:ergon/nix-shell-parts?ref=v1
-````
+```
 
 Vendored template (copies all modules into your repo):
 

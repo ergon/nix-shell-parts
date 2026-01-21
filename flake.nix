@@ -70,8 +70,12 @@
                   "-c=Ergon Informatik AG"
                   "-l=MIT"
                 ];
+                excludes = [
+                  "**/zensical.toml"
+                ];
                 includes = [
                   "*.nix"
+                  "*.css"
                   "*.sh"
                   "*.jq"
                   "*.yml"
