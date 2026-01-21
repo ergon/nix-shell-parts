@@ -145,21 +145,25 @@ in
     src = ./.;
 
     nativeBuildInputs = [
-      pkgs.mdbook
+      pkgs.zensical
     ];
 
     patchPhase = ''
-      cp ${../README.md} src/README.md
+      cp ${../README.md} src/index.md
 
-      substituteInPlace src/SUMMARY.md \
-        --replace-fail '<!-- Shell modules -->' \
+      sed -i '1i\
+      ---\
+      icon: lucide/book-open\
+      ---' src/index.md
+
+      substituteInPlace zensical.toml \
+        --replace-fail '# <!-- Shell modules -->' \
         ${
-        lib.escapeShellArg (
-          lib.strings.concatMapAttrsStringSep "\n" (
-            name: value: "- [${name}](./shell_module_${name}.md)"
-          )
-          docsByShellModules
-        )
+        lib.escapeShellArg
+        (lib.strings.concatMapAttrsStringSep "\n" (name: _: ''
+            {"${name}" = "shell_module_${name}.md"},
+          '')
+          docsByShellModules)
       }
       cp "${flakePartsOptions.optionsCommonMark}" src/flake_parts_options.md
 
@@ -169,7 +173,9 @@ in
         )
         docsByShellModules
       }
-
     '';
-    buildPhase = ''mdbook build --dest-dir $out'';
+    buildPhase = ''
+      zensical build
+      mv site $out
+    '';
   }
