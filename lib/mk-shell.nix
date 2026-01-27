@@ -17,14 +17,20 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-inputs: {
-  _module.args = {
-    inherit (inputs) treefmt-nix;
+{treefmt-nix}: {
+  pkgs,
+  name ? "",
+}: module: let
+  lib = pkgs.lib;
+  evaluated = lib.evalModules {
+    modules =
+      [
+        {_module.args = {inherit pkgs treefmt-nix;};}
+        ../templates/nix-shell-parts-vendored/nix/vendored/shell-modules
+        module
+      ]
+      ++ import ../templates/nix-shell-parts-vendored/nix/vendored/shell-modules/all.nix;
+    specialArgs = {inherit name;};
   };
-  imports = [
-    ./systems.nix
-    ./shell-modules.nix
-  ];
-
-  perSystem.shellModules = import ./shell-modules/all.nix;
-}
+in
+  evaluated.config.finalPackage

@@ -20,7 +20,7 @@
 {
   inputs,
   flake-parts-lib,
-  nix-flake-parts,
+  treefmt-nix,
   ...
 }: {
   options = {
@@ -48,7 +48,7 @@
               [
                 {
                   _module.args = {
-                    inherit pkgs inputs nix-flake-parts;
+                    inherit pkgs inputs treefmt-nix;
                   };
                 }
                 ./shell-modules

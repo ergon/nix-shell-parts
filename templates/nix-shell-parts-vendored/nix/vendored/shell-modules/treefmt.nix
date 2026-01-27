@@ -18,13 +18,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 {
-  nix-flake-parts,
+  treefmt-nix,
   lib,
   config,
   pkgs,
   ...
 }: let
-  inherit (nix-flake-parts.inputs) treefmt-nix;
   cfg = config.treefmt;
 in {
   options.treefmt = lib.mkOption {

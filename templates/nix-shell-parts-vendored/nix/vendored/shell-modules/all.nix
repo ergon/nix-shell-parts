@@ -17,14 +17,15 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-inputs: {
-  _module.args = {
-    inherit (inputs) treefmt-nix;
-  };
-  imports = [
-    ./systems.nix
-    ./shell-modules.nix
-  ];
-
-  perSystem.shellModules = import ./shell-modules/all.nix;
-}
+[
+  ./devenv-compatibility.nix
+  ./files.nix
+  ./git-hooks.nix
+  ./git-lfs.nix
+  ./git-root.nix
+  ./languages/java-gradle.nix
+  ./languages/java.nix
+  ./profile.nix
+  ./scripts.nix
+  ./treefmt.nix
+]

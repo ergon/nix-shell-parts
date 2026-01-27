@@ -18,35 +18,41 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 {
+  description = "My Project";
+
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
+    systems.url = "github:nix-systems/default";
 
-    treefmt-nix.url = "github:numtide/treefmt-nix";
-    treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
+    nix-shell-parts.url = "github:ergon/nix-shell-parts";
+    nix-shell-parts.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  # NOTE: where should me project specific settings go?
+  # NOTE: where should my project specific settings go?
   # | location           | description                          | edit?        |
   # |--------------------|--------------------------------------|--------------|
   # | ./nix/*.nix        | your project specific configurations | YES          |
-  # | ./nix/vendored/*   | ergon provided settings              | normally not |
   # | ./flake.{nix,lock} | combines everything                  | rarely       |
 
-  outputs = inputs @ {flake-parts, ...}:
-    flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = [
-        (import ./nix/vendored inputs)
-      ];
-
-      perSystem = {...}: {
+  outputs = {
+    nixpkgs,
+    systems,
+    nix-shell-parts,
+    ...
+  }: let
+    forAllSystems = nixpkgs.lib.genAttrs (import systems);
+  in {
+    devShells = forAllSystems (
+      system: let
+        pkgs = import nixpkgs {inherit system;};
+        mkShell = nix-shell-parts.lib.mkShell {inherit pkgs;};
+      in {
         # define your shell environments, for example:
         # - ci: jenkins builds with minimal dependencies
-        # - default: extends ci with all tools need for local development
-        shells.ci.imports = [./nix/configuration.ci.nix];
-        shells.default.imports = [./nix/configuration.dev.nix];
-      };
-    };
+        # - default: extends ci with all tools needed for local development
+        default = mkShell {imports = [./nix/devshell.nix];};
+      }
+    );
+  };
 }
