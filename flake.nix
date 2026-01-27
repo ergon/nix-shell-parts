@@ -31,11 +31,12 @@
   outputs = inputs:
     inputs.flake-parts.lib.mkFlake {inherit inputs;} ({flake-parts-lib, ...}: let
       flakeModules.default = flake-parts-lib.importApply ./modules inputs;
+      mkShell = import ./lib/mk-shell.nix {inherit (inputs) treefmt-nix;};
     in {
       imports = [flakeModules.default];
       flake = {
         inherit flakeModules;
-        lib.mkShell = import ./modules/mk-shell.nix {inherit (inputs) treefmt-nix;};
+        lib.mkShell = mkShell;
         templates = {
           default = {
             description = "Standard template for nix-shell-parts: normal flake dependency, easy upgrades by updating your flake input.";
@@ -74,7 +75,6 @@
             '';
         in {
           mk-shell = let
-            mkShell = import ./modules/mk-shell.nix {inherit (inputs) treefmt-nix;};
             shell = mkShell {inherit pkgs;} {
               packages = [pkgs.hello];
             };
