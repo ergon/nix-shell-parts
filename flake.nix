@@ -35,6 +35,7 @@
       imports = [flakeModules.default];
       flake = {
         inherit flakeModules;
+        lib.mkShell = import ./modules/mk-shell.nix {inherit (inputs) treefmt-nix;};
         templates = {
           default = {
             description = "Standard template for nix-shell-parts: normal flake dependency, easy upgrades by updating your flake input.";
@@ -53,6 +54,21 @@
         lib,
         ...
       }: {
+        checks.mk-shell = let
+          mkShell = import ./modules/mk-shell.nix {inherit (inputs) treefmt-nix;};
+          shell = mkShell {inherit pkgs;} {
+            packages = [pkgs.hello];
+          };
+        in
+          pkgs.runCommand "mk-shell-check" {
+            nativeBuildInputs = shell.nativeBuildInputs;
+          } ''
+            # Ensure the shell derivation itself builds
+            test -e ${shell}
+            # Verify packages from the shell are available
+            hello > $out
+          '';
+
         packages.docs = pkgs.callPackage ./docs {
           inherit pkgs lib inputs;
         };

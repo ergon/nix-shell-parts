@@ -93,9 +93,7 @@
         {git.root.enable = true;}
         ../templates/nix-shell-parts-vendored/nix/vendored/shell-modules/default.nix
       ]
-      ++ (
-        (import ../templates/nix-shell-parts-vendored/nix/vendored inputs)
-      ).perSystem.shellModules;
+      ++ import ../templates/nix-shell-parts-vendored/nix/vendored/shell-modules/all.nix;
     specialArgs = {
       name = "<name>";
       inherit pkgs inputs;
