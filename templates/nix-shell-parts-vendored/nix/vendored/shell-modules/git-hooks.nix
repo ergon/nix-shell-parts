@@ -24,7 +24,7 @@
   ...
 }: let
   inherit (lib) types;
-  command = config.git.hooks.pre-commit-command;
+  cfg = config.git.hooks;
 
   pre-commit = pkgs.writeShellScript "pre-commit" ''
     set -e
@@ -35,21 +35,45 @@
     # No files → skip
     [ -z "$FILES" ] && exit 0
 
-    # Example: run a formatter, linter, or custom command
-    ${command}
+    ${cfg.pre-commit-command}
+
+    exit 0
+  '';
+
+  commit-msg = pkgs.writeScript "commit-msg" ''
+    set -e
+
+    MSG_FILE="$1"
+
+    ${cfg.commit-msg-command}
 
     exit 0
   '';
 in {
-  options.git.hooks.pre-commit-command = lib.mkOption {
-    type = types.lines;
-    description = ''
-      command to be run as pre-commit.
+  options.git.hooks = {
+    pre-commit-command = lib.mkOption {
+      type = types.lines;
+      description = ''
+        command to be run as pre-commit.
 
-      $FILES is an environment variable that contains all changes files
-    '';
-    example = "treefmt $FILES";
-    default = "";
+        $FILES is an environment variable that contains all changes files
+      '';
+      example = "treefmt $FILES";
+      default = "";
+    };
+
+    commit-msg-command = lib.mkOption {
+      type = types.lines;
+      description = ''
+        command to be run as commit-msg.
+
+        $MSG_FILE is an environment variable that contains all changes files
+      '';
+      default = "";
+    };
   };
-  config.files.".git/hooks/pre-commit" = lib.mkIf (command != null) pre-commit;
+  config = {
+    files.".git/hooks/pre-commit" = lib.mkIf (cfg.pre-commit-command != null) pre-commit;
+    files.".git/hooks/commit-msg" = lib.mkIf (cfg.commit-msg-command != null) commit-msg;
+  };
 }
