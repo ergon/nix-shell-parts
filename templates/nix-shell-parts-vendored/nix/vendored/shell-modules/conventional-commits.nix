@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Ergon Informatik AG
+# Copyright (c) 2026 Ergon Informatik AG
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -17,16 +17,24 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-[
-  ./devenv-compatibility.nix
-  ./conventional-commits.nix
-  ./files.nix
-  ./git-hooks.nix
-  ./git-lfs.nix
-  ./git-root.nix
-  ./languages/java-gradle.nix
-  ./languages/java.nix
-  ./profile.nix
-  ./scripts.nix
-  ./treefmt.nix
-]
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}: let
+  cfg = config.conventional-commits;
+in {
+  options.conventional-commits = {
+    enable = lib.mkEnableOption "Enable conventional commits";
+    package = lib.mkPackageOption pkgs "convco" {};
+  };
+
+  config =
+    lib.mkIf cfg.enable
+    {
+      git.hooks.commit-msg-command = ''
+        cat $MSG_FILE | ${cfg.package}/bin/convco check --from-stdin
+      '';
+    };
+}
