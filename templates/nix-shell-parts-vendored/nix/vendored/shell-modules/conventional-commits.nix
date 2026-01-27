@@ -33,6 +33,8 @@ in {
   config =
     lib.mkIf cfg.enable
     {
+      packages = [cfg.package];
+
       git.hooks.commit-msg-command = ''
         cat $MSG_FILE | ${cfg.package}/bin/convco check --from-stdin
       '';
