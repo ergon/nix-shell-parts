@@ -38,7 +38,7 @@
   outputs = inputs @ {flake-parts, ...}:
     flake-parts.lib.mkFlake {inherit inputs;} {
       imports = [
-        (import ./nix/vendored {inherit inputs;})
+        (import ./nix/vendored inputs)
       ];
 
       perSystem = {...}: {

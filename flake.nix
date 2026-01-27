@@ -30,7 +30,7 @@
 
   outputs = inputs:
     inputs.flake-parts.lib.mkFlake {inherit inputs;} ({flake-parts-lib, ...}: let
-      flakeModules.default = flake-parts-lib.importApply ./modules {inherit inputs;};
+      flakeModules.default = flake-parts-lib.importApply ./modules inputs;
     in {
       imports = [flakeModules.default];
       flake = {

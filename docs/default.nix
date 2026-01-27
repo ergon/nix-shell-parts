@@ -87,23 +87,21 @@
         option.declarations;
     };
 
-  allShellOptions = let
-    nix-flake-parts = {inherit inputs;};
-  in
-    lib.evalModules {
-      modules =
-        [
-          {git.root.enable = true;}
-          ../templates/nix-shell-parts-vendored/nix/vendored/shell-modules/default.nix
-        ]
-        ++ (
-          (import ../templates/nix-shell-parts-vendored/nix/vendored nix-flake-parts)
-        ).perSystem.shellModules;
-      specialArgs = {
-        name = "<name>";
-        inherit pkgs inputs nix-flake-parts;
-      };
+  allShellOptions = lib.evalModules {
+    modules =
+      [
+        {git.root.enable = true;}
+        ../templates/nix-shell-parts-vendored/nix/vendored/shell-modules/default.nix
+      ]
+      ++ (
+        (import ../templates/nix-shell-parts-vendored/nix/vendored inputs)
+      ).perSystem.shellModules;
+    specialArgs = {
+      name = "<name>";
+      inherit pkgs inputs;
+      inherit (inputs) treefmt-nix;
     };
+  };
 
   hasDeclaringFile = option: declaringFile:
     lib.any (declaration: declaration == declaringFile) option.declarations;

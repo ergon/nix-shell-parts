@@ -17,8 +17,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-nix-flake-parts: {
-  _module.args = {inherit nix-flake-parts;};
+inputs: {
+  _module.args = {
+    inherit (inputs) treefmt-nix;
+  };
   imports = [
     ./systems.nix
     ./shell-modules.nix
