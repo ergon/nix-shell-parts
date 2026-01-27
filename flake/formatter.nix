@@ -24,7 +24,9 @@
     lib,
     ...
   }: {
+    checks.treefmt = config.shells.default.treefmt.build.check ../.;
     formatter = config.shells.default.treefmt.build.wrapper;
+
     shells.default = {
       treefmt = {
         enable = true;
