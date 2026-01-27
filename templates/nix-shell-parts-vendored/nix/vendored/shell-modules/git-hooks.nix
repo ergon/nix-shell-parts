@@ -42,14 +42,14 @@
   '';
 in {
   options.git.hooks.pre-commit-command = lib.mkOption {
-    type = types.nullOr types.str;
+    type = types.lines;
     description = ''
       command to be run as pre-commit.
 
       $FILES is an environment variable that contains all changes files
     '';
     example = "treefmt $FILES";
-    default = null;
+    default = "";
   };
   config.files.".git/hooks/pre-commit" = lib.mkIf (command != null) pre-commit;
 }
