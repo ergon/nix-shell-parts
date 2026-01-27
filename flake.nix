@@ -31,12 +31,16 @@
   outputs = inputs:
     inputs.flake-parts.lib.mkFlake {inherit inputs;} ({flake-parts-lib, ...}: let
       flakeModules.default = flake-parts-lib.importApply ./modules inputs;
-      mkShell = import ./lib/mk-shell.nix {inherit (inputs) treefmt-nix;};
     in {
-      imports = [flakeModules.default];
+      imports = [
+        flakeModules.default
+        ./flake/checks.nix
+        ./flake/docs.nix
+        ./flake/formatter.nix
+      ];
       flake = {
         inherit flakeModules;
-        lib.mkShell = mkShell;
+        lib.mkShell = import ./lib/mk-shell.nix {inherit (inputs) treefmt-nix;};
         templates = {
           default = {
             description = "Standard template for nix-shell-parts: normal flake dependency, easy upgrades by updating your flake input.";
@@ -49,99 +53,6 @@
           vendored = {
             description = "Vendored template for nix-shell-parts: everything lives in your repo, but you must manually pull updates later.";
             path = ./templates/nix-shell-parts-vendored;
-          };
-        };
-      };
-
-      perSystem = {
-        config,
-        pkgs,
-        lib,
-        system,
-        ...
-      }: {
-        checks = let
-          checkTemplate = name: fakeInputs: let
-            template = import ./templates/${name}/flake.nix;
-            outputs = template.outputs (fakeInputs
-              // {
-                self = outputs // {inputs = fakeInputs;};
-              });
-            shell = outputs.devShells.${system}.default;
-          in
-            pkgs.runCommand "template-${name}-check" {} ''
-              test -e ${shell}
-              touch $out
-            '';
-        in {
-          mk-shell = let
-            shell = mkShell {inherit pkgs;} {
-              packages = [pkgs.hello];
-            };
-          in
-            pkgs.runCommand "mk-shell-check" {
-              nativeBuildInputs = shell.nativeBuildInputs;
-            } ''
-              # Ensure the shell derivation itself builds
-              test -e ${shell}
-              # Verify packages from the shell are available
-              hello > $out
-            '';
-
-          template-default =
-            checkTemplate
-            "nix-shell-parts"
-            {
-              inherit (inputs) nixpkgs flake-parts;
-              nix-shell-parts = inputs.self;
-            };
-
-          template-minimal =
-            checkTemplate
-            "nix-shell-parts-minimal" {
-              inherit (inputs) nixpkgs;
-              nix-shell-parts = inputs.self;
-              systems.outPath = builtins.toFile "default.nix" ''[ "${system}" ]'';
-            };
-
-          template-vendored =
-            checkTemplate
-            "nix-shell-parts-vendored"
-            {
-              inherit (inputs) nixpkgs flake-parts treefmt-nix;
-            };
-        };
-
-        packages.docs = pkgs.callPackage ./docs {
-          inherit pkgs lib inputs;
-        };
-        shells.default = {
-          inputsFrom = [config.packages.docs];
-
-          treefmt = {
-            enable = true;
-            pre-commit-hook = true;
-            programs.alejandra.enable = true;
-            settings.formatter = {
-              addlicense = {
-                command = "${lib.getExe pkgs.addlicense}";
-                options = [
-                  "-c=Ergon Informatik AG"
-                  "-l=MIT"
-                ];
-                excludes = [
-                  "**/zensical.toml"
-                ];
-                includes = [
-                  "*.nix"
-                  "*.css"
-                  "*.sh"
-                  "*.jq"
-                  "*.yml"
-                  "*.toml"
-                ];
-              };
-            };
           };
         };
       };
