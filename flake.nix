@@ -56,22 +56,61 @@
         config,
         pkgs,
         lib,
+        system,
         ...
       }: {
-        checks.mk-shell = let
-          mkShell = import ./modules/mk-shell.nix {inherit (inputs) treefmt-nix;};
-          shell = mkShell {inherit pkgs;} {
-            packages = [pkgs.hello];
-          };
-        in
-          pkgs.runCommand "mk-shell-check" {
-            nativeBuildInputs = shell.nativeBuildInputs;
-          } ''
-            # Ensure the shell derivation itself builds
-            test -e ${shell}
-            # Verify packages from the shell are available
-            hello > $out
-          '';
+        checks = let
+          checkTemplate = name: fakeInputs: let
+            template = import ./templates/${name}/flake.nix;
+            outputs = template.outputs (fakeInputs
+              // {
+                self = outputs // {inputs = fakeInputs;};
+              });
+            shell = outputs.devShells.${system}.default;
+          in
+            pkgs.runCommand "template-${name}-check" {} ''
+              test -e ${shell}
+              touch $out
+            '';
+        in {
+          mk-shell = let
+            mkShell = import ./modules/mk-shell.nix {inherit (inputs) treefmt-nix;};
+            shell = mkShell {inherit pkgs;} {
+              packages = [pkgs.hello];
+            };
+          in
+            pkgs.runCommand "mk-shell-check" {
+              nativeBuildInputs = shell.nativeBuildInputs;
+            } ''
+              # Ensure the shell derivation itself builds
+              test -e ${shell}
+              # Verify packages from the shell are available
+              hello > $out
+            '';
+
+          template-default =
+            checkTemplate
+            "nix-shell-parts"
+            {
+              inherit (inputs) nixpkgs flake-parts;
+              nix-shell-parts = inputs.self;
+            };
+
+          template-minimal =
+            checkTemplate
+            "nix-shell-parts-minimal" {
+              inherit (inputs) nixpkgs;
+              nix-shell-parts = inputs.self;
+              systems.outPath = builtins.toFile "default.nix" ''[ "${system}" ]'';
+            };
+
+          template-vendored =
+            checkTemplate
+            "nix-shell-parts-vendored"
+            {
+              inherit (inputs) nixpkgs flake-parts treefmt-nix;
+            };
+        };
 
         packages.docs = pkgs.callPackage ./docs {
           inherit pkgs lib inputs;
