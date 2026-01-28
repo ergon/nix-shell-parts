@@ -40,7 +40,11 @@
       ];
       flake = {
         inherit flakeModules;
-        lib.mkShell = import ./lib/mk-shell.nix {inherit (inputs) treefmt-nix;};
+        lib = let
+          shellLib = import ./lib/mk-shell.nix {inherit (inputs) treefmt-nix;};
+        in {
+          inherit (shellLib) mkShell evalShell;
+        };
         templates = {
           default = {
             description = "Standard template for nix-shell-parts: normal flake dependency, easy upgrades by updating your flake input.";

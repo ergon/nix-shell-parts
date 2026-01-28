@@ -17,20 +17,25 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-{treefmt-nix}: {
-  pkgs,
-  name ? "",
-}: module: let
-  lib = pkgs.lib;
-  evaluated = lib.evalModules {
-    modules =
-      [
-        {_module.args = {inherit pkgs treefmt-nix;};}
-        ../templates/nix-shell-parts-vendored/nix/vendored/shell-modules
-        module
-      ]
-      ++ import ../templates/nix-shell-parts-vendored/nix/vendored/shell-modules/all.nix;
-    specialArgs = {inherit name;};
-  };
-in
-  evaluated.config.finalPackage
+{treefmt-nix}: let
+  evalShell = {
+    pkgs,
+    name ? "",
+  }: module: let
+    lib = pkgs.lib;
+    evaluated = lib.evalModules {
+      modules =
+        [
+          {_module.args = {inherit pkgs treefmt-nix;};}
+          ../templates/nix-shell-parts-vendored/nix/vendored/shell-modules
+          module
+        ]
+        ++ import ../templates/nix-shell-parts-vendored/nix/vendored/shell-modules/all.nix;
+      specialArgs = {inherit name;};
+    };
+  in
+    evaluated.config;
+in {
+  inherit evalShell;
+  mkShell = args: module: (evalShell args module).finalPackage;
+}
