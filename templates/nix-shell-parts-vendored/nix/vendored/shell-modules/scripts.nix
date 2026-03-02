@@ -58,7 +58,7 @@
       };
     };
     config = {
-      finalPackage =
+      finalPackage = lib.mkDefault (
         # prioritize scripts over plain packages
         lib.hiPrioSet (
           # if a shebang is present, write a the script as is
@@ -79,7 +79,8 @@
               text = config.text;
             }
           else pkgs.writeShellScriptBin name config.text
-        );
+        )
+      );
       path = lib.getExe config.finalPackage;
     };
   };
