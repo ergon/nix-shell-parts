@@ -73,7 +73,13 @@ in {
     };
   };
   config = {
-    files.".git/hooks/pre-commit" = lib.mkIf (cfg.pre-commit-command != null) pre-commit;
-    files.".git/hooks/commit-msg" = lib.mkIf (cfg.commit-msg-command != null) commit-msg;
+    shellHook = lib.mkOrder 200 ''
+      _git_hooks_dir="$(git rev-parse --git-dir 2>/dev/null)/hooks"
+      if [ -d "$(git rev-parse --git-dir 2>/dev/null)" ]; then
+        mkdir -p "$_git_hooks_dir"
+        ${lib.optionalString (cfg.pre-commit-command != "") ''ln -fs "${pre-commit}" "$_git_hooks_dir/pre-commit"''}
+        ${lib.optionalString (cfg.commit-msg-command != "") ''ln -fs "${commit-msg}" "$_git_hooks_dir/commit-msg"''}
+      fi
+    '';
   };
 }
