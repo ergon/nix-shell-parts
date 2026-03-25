@@ -18,8 +18,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 [
-  ./devenv-compatibility.nix
+  # keep-sorted start
   ./conventional-commits.nix
+  ./devenv-compatibility.nix
   ./files.nix
   ./git-hooks.nix
   ./git-lfs.nix
@@ -29,4 +30,5 @@
   ./profile.nix
   ./scripts.nix
   ./treefmt.nix
+  # keep-sorted end
 ]

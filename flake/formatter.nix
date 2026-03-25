@@ -32,6 +32,7 @@
         enable = true;
         pre-commit-hook = true;
         programs.alejandra.enable = true;
+        programs.keep-sorted.enable = true;
         settings.formatter = {
           addlicense = {
             command = "${lib.getExe pkgs.addlicense}";
