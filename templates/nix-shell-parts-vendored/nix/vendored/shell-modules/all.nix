@@ -28,6 +28,7 @@
   ./languages/java-gradle.nix
   ./languages/java.nix
   ./profile.nix
+  ./renovate/renovate.nix
   ./scripts.nix
   ./treefmt.nix
   # keep-sorted end
