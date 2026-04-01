@@ -91,7 +91,7 @@ fi
 
 set +e
 renovateOutput=$(
-  LOG_LEVEL=DEBUG renovate --onboarding=false --platform=local "${POSITIONAL_ARGS[@]}"
+  RENOVATE_REPOSITORIES='[]' LOG_LEVEL=DEBUG renovate --onboarding=false --platform=local "${POSITIONAL_ARGS[@]}"
 )
 ret=$?
 set -e
