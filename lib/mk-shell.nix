@@ -27,10 +27,10 @@
       modules =
         [
           {_module.args = {inherit pkgs treefmt-nix;};}
-          ../templates/nix-shell-parts-vendored/nix/vendored/shell-modules
+          ../modules/shell-modules
           module
         ]
-        ++ import ../templates/nix-shell-parts-vendored/nix/vendored/shell-modules/all.nix;
+        ++ import ../modules/shell-modules/all.nix;
       specialArgs = {inherit name;};
     };
   in

@@ -50,14 +50,6 @@
             description = "Standard template for nix-shell-parts: normal flake dependency, easy upgrades by updating your flake input.";
             path = ./templates/nix-shell-parts;
           };
-          minimal = {
-            description = "Minimal template for nix-shell-parts: uses lib.mkShell without flake-parts.";
-            path = ./templates/nix-shell-parts-minimal;
-          };
-          vendored = {
-            description = "Vendored template for nix-shell-parts: everything lives in your repo, but you must manually pull updates later.";
-            path = ./templates/nix-shell-parts-vendored;
-          };
         };
       };
     });

@@ -64,21 +64,6 @@ in {
           inherit (inputs) nixpkgs flake-parts;
           nix-shell-parts = inputs.self;
         };
-
-      template-minimal =
-        checkTemplate
-        "nix-shell-parts-minimal" {
-          inherit (inputs) nixpkgs;
-          nix-shell-parts = inputs.self;
-          systems.outPath = builtins.toFile "default.nix" ''[ "${system}" ]'';
-        };
-
-      template-vendored =
-        checkTemplate
-        "nix-shell-parts-vendored"
-        {
-          inherit (inputs) nixpkgs flake-parts treefmt-nix;
-        };
     };
   };
 }
