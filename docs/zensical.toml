@@ -48,6 +48,7 @@ Copyright &copy; Ergon Informatik AG
 # Read more: https://zensical.org/docs/setup/navigation/
 nav = [
     { "Get started" = "index.md" },
+    { "Customizing nixpkgs" = "nixpkgs-customization.md" },
     { "Reference" = [
         { "Flake Parts options" = "flake_parts_options.md" },
         { "Shell Modules" = [
