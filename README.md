@@ -1,48 +1,72 @@
 # nix-shell-parts
 
-> ⚠️ This repository is in its early stages and not yet stable.
+> This project is actively developed.
+> Some APIs may change.
 
-`nix-shell-parts` is a lightweight kickstarter for adding Nix development and deployment shells to a project without needing to know much about Nix, flakes and how to structure a project upfront.
-It provides a buffet of reusable [Flake Parts](https://flake.parts/) modules and shell modules (under `perSystem.shellModules`) for common needs like devshells, formatting, and git hooks.
-You have all options available but nothing is enabled until you turn it on, with only a few sensible defaults set (mainly `system`).
+`nix-shell-parts` is a lightweight collection of modules to kickstart Nix (development) shells.
+Built on [flake-parts](https://flake.parts/), it lets you declaratively configure formatting, git hooks, language tooling, and more.
+
+## Why nix-shell-parts
+
+Setting up a `devShell` with language tooling, formatting, git hooks and helper scripts requires a lot of Nix boilerplate.
+Flakes and the module system provide the right foundations (version pinning, declarative configuration), but the glue code is still on you.
+
+nix-shell-parts provides reusable modules that handle this glue code:
+
+- **Opt-in**: every module is optional.
+  Pick what you need today, add more as your project grows.
+  The essentials are covered, but nothing is forced on you.
+- **Native flake integration**: works with [flakes](https://nix.dev/concepts/flakes) directly.
+  Standard `nix develop`, pure evaluation, no `--impure` flag needed.
+- **Lightweight and extensible**: uses just the module system you already know.
+  Easy to add your own modules.
+- **Built on [flake-parts](https://flake.parts/)**: integrates into your flake as a module.
+
+The goal is to be simple enough to adopt without deep Nix knowledge, and flexible enough for expert use cases.
 
 ## Getting started
 
 ### Prerequisites
 
-- [Nix](https://nix.dev/install-nix) with [Flakes enabled](https://nix.dev/manual/nix/2.28/development/experimental-features)
+- [Nix](https://nix.dev/install-nix) with [flakes enabled](https://nix.dev/manual/nix/latest/development/experimental-features)
 
-### Initial setup
-
-#### Start with a template
-
-Standard template (uses this repo as an input):
+### Without an existing flake
 
 ```bash
 nix flake init -t github:ergon/nix-shell-parts?ref=v1
+nix develop
 ```
 
-Vendored template (copies all modules into your repo):
-
-```bash
-nix flake init -t github:ergon/nix-shell-parts?ref=v1#vendored
-```
-
-**When to use which?**
-
-- **Standard template**: normal flake dependency, easy upgrades by updating your flake input.
-- **Vendored template**: everything lives in your repo, but you must manually pull updates later.
+This creates a `flake.nix` and configuration files under `./nix/`.
+Edit those to configure your shell.
 
 ### Add to an existing flake
 
 See [`templates/nix-shell-parts/flake.nix`](templates/nix-shell-parts/flake.nix) for a minimal example.
 
-## Usage
+### Example configuration
 
-All modules are already exported by this flake, so you do not need to import anything manually.
-You simply enable and configure the pieces you want through the module system, and leave the rest off.
-If you want to see concrete setups, the [templates directory contains minimal working examples](./templates) to copy from.
+A shell with treefmt (formatting) and a pre-commit hook:
+
+```nix
+# ./nix/devshell.nix
+{pkgs, ...}: {
+  treefmt.enable = true;
+  treefmt.pre-commit-hook = true;
+  treefmt.programs.alejandra.enable = true;
+  treefmt.programs.prettier.enable = true;
+
+  packages = [
+    pkgs.nodejs_24
+    pkgs.curl
+  ];
+}
+```
 
 ## Documentation
 
 The documentation including all options are published at: [https://ergon.github.io/nix-shell-parts/](https://ergon.github.io/nix-shell-parts/)
+
+## Feedback
+
+Feedback is very welcome. [Open an issue](https://github.com/ergon/nix-shell-parts/issues) with first impressions, questions, or things you find missing.
