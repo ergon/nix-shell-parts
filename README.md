@@ -1,7 +1,6 @@
 # nix-shell-parts
 
-> ⚠️
-> This repository is in its early stages and not yet stable.
+> ⚠️ This repository is in its early stages and not yet stable.
 
 `nix-shell-parts` is a lightweight kickstarter for adding Nix development and deployment shells to a project without needing to know much about Nix, flakes and how to structure a project upfront.
 It provides a buffet of reusable [Flake Parts](https://flake.parts/) modules and shell modules (under `perSystem.shellModules`) for common needs like devshells, formatting, and git hooks.
@@ -40,7 +39,9 @@ See [`templates/nix-shell-parts/flake.nix`](templates/nix-shell-parts/flake.nix)
 
 ## Usage
 
-All modules are already exported by this flake, so you do not need to import anything manually. You simply enable and configure the pieces you want through the module system, and leave the rest off. If you want to see concrete setups, the [templates directory contains minimal working examples](.md) to copy from.
+All modules are already exported by this flake, so you do not need to import anything manually.
+You simply enable and configure the pieces you want through the module system, and leave the rest off.
+If you want to see concrete setups, the [templates directory contains minimal working examples](./templates) to copy from.
 
 ## Documentation
 
