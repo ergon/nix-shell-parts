@@ -48,6 +48,6 @@ in {
     ];
     # The default from treefmt.nix (".git/config") does not work with git worktrees
     treefmt.projectRootFile = lib.mkIf cfg.enable (lib.mkDefault "flake.lock");
-    git.hooks.pre-commit-command = lib.mkIf cfg.pre-commit-hook "${lib.getExe cfg.build.wrapper} --fail-on-change $FILES";
+    git.hooks.pre-commit-command = lib.mkIf cfg.pre-commit-hook ''${lib.getExe cfg.build.wrapper} --fail-on-change "''${FILES[@]}"'';
   };
 }

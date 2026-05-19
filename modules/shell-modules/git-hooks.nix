@@ -30,10 +30,10 @@
     set -e
 
     # Get list of staged files (added, copied, modified, renamed)
-    FILES=$(git diff --cached --name-only --diff-filter=ACMR)
+    mapfile -t FILES < <(git diff --cached --name-only --diff-filter=ACMR)
 
     # No files → skip
-    [ -z "$FILES" ] && exit 0
+    [ ''${#FILES[@]} -eq 0 ] && exit 0
 
     ${cfg.pre-commit-command}
 
