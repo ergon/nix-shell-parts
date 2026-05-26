@@ -81,7 +81,7 @@ in {
           eval "$old_set_opts"
           eval "$old_shopt_opts"
         '';
-        nativeBuildInputs = [config.packages];
+        nativeBuildInputs = config.packages;
       }
       // config.env);
   };
