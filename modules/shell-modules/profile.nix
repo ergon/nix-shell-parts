@@ -26,19 +26,6 @@
   cfg = config.profile;
 
   inherit (lib) types;
-
-  # Returns all store paths from a derivation or package, supporting multi-output derivations.
-  #
-  # Examples:
-  #   drvOrPackageToPaths pkgs.openssl
-  #     => [ /nix/store/...-openssl /nix/store/...-openssl-dev ... ]
-  #
-  #   drvOrPackageToPaths pkgs.git
-  #     => [ /nix/store/...-git ]
-  drvOrPackageToPaths = drvOrPackage:
-    if drvOrPackage ? outputs
-    then builtins.map (output: drvOrPackage.${output}) drvOrPackage.outputs
-    else [drvOrPackage];
 in {
   options.profile = {
     enable = lib.mkEnableOption "bin profile directory";
@@ -65,7 +52,7 @@ in {
     profile = {
       finalPackage = pkgs.buildEnv {
         name = "${config.name}-profile";
-        paths = lib.flatten (builtins.map drvOrPackageToPaths config.packages);
+        paths = builtins.map lib.getBin config.packages;
         pathsToLink = [
           "/bin"
         ];
