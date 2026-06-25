@@ -28,14 +28,14 @@
   inherit (lib) types;
 in {
   options.profile = {
-    enable = lib.mkEnableOption "bin profile directory";
+    enable = lib.mkEnableOption "profile directory";
     destination = lib.mkOption {
       type = types.str;
       description = "The destination directory in which to create the profile";
       default =
         if config.git.root.enable
-        then "${config.git.root.shellVariable}/bin"
-        else "$PWD/bin";
+        then "${config.git.root.shellVariable}/.profile"
+        else "$PWD/.profile";
     };
     finalPackage = lib.mkOption {
       type = types.package;
@@ -43,7 +43,7 @@ in {
       description = ''
         An environment profile derivation containing all binaries of the packages of this shell.
         This profile is used to create this shell, but can also be linked or reused elsewhere.
-        For example, you can symlink it to a `bin/` folder in your repository to get stable paths to tools like nodejs.
+        For example, you can symlink it to a `.profile/bin/` folder in your repository to get stable paths to tools like nodejs.
       '';
     };
   };
@@ -61,7 +61,8 @@ in {
 
     shellHook = ''
       rm -rf "${cfg.destination}"
-      ln -fs ${config.profile.finalPackage}/bin "${cfg.destination}"
+      mkdir -p "${cfg.destination}"
+      ln -fs ${config.profile.finalPackage}/bin/ "${cfg.destination}"
     '';
   };
 }
