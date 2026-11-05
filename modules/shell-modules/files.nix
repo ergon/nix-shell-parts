@@ -49,7 +49,7 @@ in {
   config = {
     files-install = pkgs.writeShellApplication {
       name = "install-symlinks";
-      runtimeInputs = [pkgs.coreutils];
+      runtimeInputs = [pkgs.coreutils pkgs.git];
       text = ''
         if ! _git_root=$(git rev-parse --show-toplevel 2>/dev/null); then
           echo 'Error: Cannot install files when not inside a git repository. Did you forget to run git init?' >&2

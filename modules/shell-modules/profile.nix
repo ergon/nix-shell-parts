@@ -60,9 +60,9 @@ in {
     };
 
     shellHook = ''
-      rm -rf "${cfg.destination}"
       mkdir -p "${cfg.destination}"
-      ln -fs ${config.profile.finalPackage}/bin/ "${cfg.destination}"
+      ${pkgs.findutils}/bin/find "${cfg.destination}" -mindepth 1 -maxdepth 1 -type l -delete
+      ${pkgs.coreutils}/bin/ln -sfn -t "${cfg.destination}" ${cfg.finalPackage}/*
     '';
   };
 }

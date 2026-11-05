@@ -25,12 +25,13 @@
 }: let
   inherit (lib) types;
   cfg = config.git.hooks;
+  git = lib.getExe pkgs.git;
 
   pre-commit = pkgs.writeShellScript "pre-commit" ''
     set -e
 
     # Get list of staged files (added, copied, modified, renamed)
-    mapfile -t FILES < <(git diff --cached --name-only --diff-filter=ACMR)
+    mapfile -t FILES < <(${git} diff --cached --name-only --diff-filter=ACMR)
 
     # No files → skip
     [ ''${#FILES[@]} -eq 0 ] && exit 0
@@ -74,8 +75,8 @@ in {
   };
   config = {
     shellHook = lib.mkOrder 200 ''
-      _git_hooks_dir="$(git rev-parse --git-dir 2>/dev/null)/hooks"
-      if [ -d "$(git rev-parse --git-dir 2>/dev/null)" ]; then
+      _git_hooks_dir="$(${git} rev-parse --git-dir 2>/dev/null)/hooks"
+      if [ -d "$(${git} rev-parse --git-dir 2>/dev/null)" ]; then
         mkdir -p "$_git_hooks_dir"
         ${lib.optionalString (cfg.pre-commit-command != "") ''ln -fs "${pre-commit}" "$_git_hooks_dir/pre-commit"''}
         ${lib.optionalString (cfg.commit-msg-command != "") ''ln -fs "${commit-msg}" "$_git_hooks_dir/commit-msg"''}

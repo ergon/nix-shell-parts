@@ -18,6 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 {
+  pkgs,
   lib,
   config,
   ...
@@ -75,7 +76,7 @@ in {
         # `nix develop` runs the shellHooks in the current $PWD, which is often surprising.
         # Therefore, change into the repository root directory so all subsequent shellHook fragments execute there.
         (lib.mkOrder 100 ''
-          export ${cfg.root.shellVariableName}=$(git rev-parse --show-toplevel)
+          export ${cfg.root.shellVariableName}=$(${lib.getExe pkgs.git} rev-parse --show-toplevel)
           pushd "${cfg.root.shellVariable}" > /dev/null
         '')
       ];
